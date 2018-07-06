@@ -38,6 +38,19 @@ const typeDefs = gql`
     starts_count: String
   }
 
+  input TrackInput {
+    id: ID
+    name: String
+    band: String
+    starts_count: String
+  }
+
+  input PlaylistInput {
+    id: ID
+    title: String
+    genre: String
+  }
+
   type Query {
     playlist: [Playlist]
     tracks: [Track]
@@ -46,8 +59,8 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    addTrack(id: ID, name: String, band: String, starts_count: String): Track
-    addPlaylist(id: ID, title: String, genre: String): Playlist
+    addTrack(input: TrackInput): Track
+    addPlaylist(input: PlaylistInput): Playlist
   }
 `;
 
@@ -57,8 +70,6 @@ const resolvers = {
     playlist: () => playlist,
     tracks: () => track,
     trackById: (_, {id}) => {
-      console.log(id)
-      if (id === undefined) {return track}
       const trackIndex = track.findIndex(track => track.id === `${id}`);
       return track[trackIndex]
     },
@@ -68,7 +79,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    addTrack: (_, {id, name, band, starts_count}) => {
+    addTrack: (_, { input: {id, name, band, starts_count}}) => {
       const newTreck = {
         id: id,
         name: name,
@@ -78,7 +89,7 @@ const resolvers = {
       track.push(newTreck)
       return newTreck;
     },
-    addPlaylist: (_, {id, title, genre}) => {
+    addPlaylist: (_, { input: {id, title, genre}}) => {
       const newPlaylist = {
         id: id,
         title: title,
